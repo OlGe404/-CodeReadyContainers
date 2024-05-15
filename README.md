@@ -1,5 +1,5 @@
 # CodeReadyContainers
-This repo can be used to setup a local code ready containers (CRC) installation (openshift 4 equivalent) on Ubuntu/Debian.
+This repo can be used to setup a local code ready containers (CRC) installation (openshift 4 equivalent) on Ubuntu/Debian (only tested on Ubuntu 22.04).
 
 ## Requirements
 To install CRC with this repo, you need:
@@ -9,7 +9,6 @@ To install CRC with this repo, you need:
 * 9GB of memory (15GB when cluster monitoring is enabled)
 * 35GB of free storage space
 * One of the following operating systems:
-    - RHEL/CentOS 8 and 9
     - Ubuntu 18.04 LTS or later
     - Debian 10 or later
 
@@ -30,6 +29,7 @@ If the installation fails, it can get stuck and prevent new installations to run
 
 ```bash
 # TL;DR
+crc delete --force
 sudo virsh list --all
 sudo virsh destroy crc
 sudo virsh undefine crc
@@ -37,7 +37,7 @@ sudo virsh undefine crc
 
 ## Deinstall
 To deinstall CRC, run <code>ansible-playbook deinstall.yaml</code>.
-If passwordless sudo is disable, run <code>ansible-playbook deinstall.yaml -K</code> instead.
+If passwordless sudo is disabled, run <code>ansible-playbook deinstall.yaml -K</code> instead.
 
 ## Update
 If you want to update an existing CRC installation to a new release, set the new version in
