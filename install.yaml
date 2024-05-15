@@ -108,7 +108,7 @@
         mode: "0755"
         force: true
 
-    - name: Test oc login
+    - name: Test oc login as developer
       tags: test
       ansible.builtin.command: >
         oc login -u developer -p developer https://api.crc.testing:6443 --insecure-skip-tls-verify
