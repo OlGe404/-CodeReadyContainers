@@ -1,15 +1,11 @@
-# code: language=ansible
 ---
-- name: Deinstall crc
+- name: Deinstall CRC
   hosts: localhost
-  gather_facts: false
+  connection: local
   vars_files: vars.yaml
-  vars_prompt:
-    - name: sudo_pass
-      prompt: "Provide your sudo password to start the deinstallation"
-
   tasks:
     - name: Remove user from kubeconfig
+      tags: skip_ansible_lint
       ansible.builtin.shell: oc logout | true
 
     - name: Remove CRC instance
@@ -22,7 +18,7 @@
     - name: Remove CRC files
       become: true
       loop:
-        - /tmp/crc-linux-{{ crc_version }}-amd64/crc
+        - /tmp/crc-linux-{{ crc_version }}-amd64/
         - /usr/local/bin/crc
       ansible.builtin.file:
         state: absent
@@ -36,4 +32,4 @@
 
     - name: Remove user from 'libvirt' group
       become: true
-      ansible.builtin.command: "gpasswd --delete {{ ansible_user }} libvirt"
+      ansible.builtin.command: "gpasswd --delete {{ ansible_env.USER }} libvirt"

@@ -1,24 +1,19 @@
-# code: language=ansible
 ---
-- name: Install CRC
+- name: Install crc {{ crc_version }}
   hosts: localhost
-  gather_facts: false
+  connection: local
   vars_files: vars.yaml
-  vars_prompt:
-    - name: sudo_pass
-      prompt: "Provide your sudo password to start the installation"
-
   pre_tasks:
-    - name: Check pullsecret.json
+    - name: Check pull-secret.json
       ansible.builtin.stat:
-        path: "{{ playbook_dir }}/pullsecret.json"
+        path: "{{ playbook_dir }}/pull-secret.json"
       register: pullsecret_json
 
     - name: Fail if it doesn't exist
       when: not pullsecret_json.stat.exists
       ansible.builtin.fail:
         msg: >-
-          The mandatory 'pullsecret.json' file doesn't exist.
+          The mandatory 'pull-secret.json' file doesn't exist.
           Read the "Requirements" section in README.md on how to create it.
 
     - name: Fail if crc_version is not valid
@@ -32,17 +27,14 @@
     - name: Install required packages
       become: true
       tags: prerequisites
-      loop:
-        - qemu-kvm
-        - libvirt-daemon
-        - libvirt-daemon-system
-        - network-manager
-      ansible.builtin.apt:
-        name: "{{ item }}"
-        update_cache: true
-        cache_valid_time: 86400
+      ansible.builtin.package:
+        name:
+          - qemu-kvm
+          - libvirt-daemon
+          - libvirt-daemon-system
+          - network-manager
 
-    - name: Download CRC {{ crc_version }}
+    - name: Download crc {{ crc_version }}
       tags: download
       become: true
       ansible.builtin.unarchive:
@@ -50,7 +42,7 @@
         remote_src: true
         dest: /tmp
         mode: "0755"
-        owner: "{{ ansible_user }}"
+        owner: "{{ ansible_env.USER }}"
         group: root
         creates: "/tmp/crc-linux-{{ crc_version }}-amd64"
       register: crc_download
@@ -58,7 +50,7 @@
       retries: 5
       delay: 3
 
-    - name: Make CRC executable
+    - name: Make crc executable
       tags: download
       become: true
       ansible.builtin.copy:
@@ -66,44 +58,49 @@
         remote_src: true
         dest: /usr/local/bin/crc
         mode: "0755"
-        owner: "{{ ansible_user }}"
+        owner: "{{ ansible_env.USER }}"
         group: root
 
     - name: Add user to 'libvirt' group
       tags: download
       become: true
       ansible.builtin.user:
-        name: "{{ ansible_user }}"
+        name: "{{ ansible_env.USER }}"
+        append: true
         groups:
           - libvirt
-        append: true
 
     - name: Enable cluster monitoring
       when: crc_cluster_monitoring
       tags: setup
       loop:
-        - cpus 6
-        - memory 14336
-        - enable-cluster-monitoring true
-      ansible.builtin.command: sg libvirt -c "crc config set {{ item }}"
+        - crc config set cpus 6
+        - crc config set memory 14336
+        - crc config set enable-cluster-monitoring true
+      ansible.builtin.command: sg libvirt -c "{{ item }}"
 
-    - name: Setup and start CRC (this can take up to 1h)
+    - name: Print time info
+      tags: setup
+      ansible.builtin.debug:
+        msg: "Entered 'Setup and start crc' at {{ ansible_date_time.iso8601 }} UTC."
+
+    - name: Setup and start crc (this can take up to 1h)
       tags: setup
       loop:
-        - setup
-        - config set consent-telemetry no
-        - config set kubeadmin-password kubeadmin
-        - start --pull-secret-file {{ playbook_dir }}/pullsecret.json
-      ansible.builtin.command: sg libvirt -c "crc {{ item }}"
+        - crc setup
+        - crc config set kubeadmin-password kubeadmin
+        - crc config set pull-secret-file {{ playbook_dir }}/pull-secret.json
+        - crc start
+      ansible.builtin.command: sg libvirt -c "{{ item }}"
 
     - name: Setup oc
       tags: setup
       become: true
       ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/.crc/bin/oc/oc"
+        src: "{{ ansible_env.HOME }}/.crc/bin/oc/oc"
         remote_src: true
         dest: /usr/local/bin/oc
-        owner: "{{ ansible_user }}"
+        owner: "{{ ansible_env.USER }}"
         group: root
         mode: "0755"
         force: true
@@ -116,12 +113,13 @@
     - name: Run, check, delete alpine pod in developer project as test
       tags: test
       ansible.builtin.shell: |
+        set -o pipefail
         oc new-project developer | true
         oc run alpine --command sleep 300 --image alpine:3.18.3
         oc wait --for=condition=Ready --timeout 15m pod/alpine
         oc delete pod/alpine --force
 
-    - name: Print CRC webconsole info
+    - name: Print crc webconsole info
       ansible.builtin.debug:
         msg: >-
           You can now login at https://console-openshift-console.apps-crc.testing with
