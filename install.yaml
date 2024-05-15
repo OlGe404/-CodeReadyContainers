@@ -29,7 +29,8 @@
     - name: Install required packages
       become: true
       tags: prerequisites
-      ansible.builtin.package:
+      ansible.builtin.apt:
+        cache_valid_time: 3600
         name:
           - qemu-kvm
           - libvirt-daemon
