@@ -4,24 +4,26 @@
   connection: local
   vars_files: vars.yaml
   pre_tasks:
-    - name: Check pull-secret.json
+    - name: Check for pull-secret file
       ansible.builtin.stat:
-        path: "{{ playbook_dir }}/pull-secret.json"
-      register: pullsecret_json
+        path: "{{ crc_pull_secret_file }}"
+      register: pull_secret_file
 
     - name: Fail if it doesn't exist
-      when: not pullsecret_json.stat.exists
+      when: not pull_secret_file.stat.exists
       ansible.builtin.fail:
         msg: >-
-          The mandatory 'pull-secret.json' file doesn't exist.
+          The mandatory pull-secret file doesn't exist at {{ crc_pull_secret_file }}.
           Read the "Requirements" section in README.md on how to create it.
 
-    - name: Fail if crc_version is not valid
+    - name: Fail if crc_version is invalid
       when: crc_version is not regex("([\d.]+)")
       ansible.builtin.fail:
         msg: >-
-          The specified crc_version is not valid.
-          Checkout the "Update" section in README.md on which versions are supported.
+          The specified crc_version ({{ crc_version }}) is invalid.
+          You can only provide semver compatible versions like "2.26.0", "2.34.1" etc.
+          Checkout the "Update" section in README.md on which versions are supported
+          and where you can find them.
 
   tasks:
     - name: Install required packages
@@ -79,7 +81,7 @@
         - crc config set enable-cluster-monitoring true
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
-    - name: Print time info
+    - name: Print timestamp
       tags: setup
       ansible.builtin.debug:
         msg: "Entered 'Setup and start crc' at {{ ansible_date_time.iso8601 }} UTC."
@@ -89,11 +91,11 @@
       loop:
         - crc setup
         - crc config set kubeadmin-password kubeadmin
-        - crc config set pull-secret-file {{ playbook_dir }}/pull-secret.json
+        - crc config set pull-secret-file {{ crc_pull_secret_file }}
         - crc start
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
-    - name: Setup oc
+    - name: Make oc executable
       tags: setup
       become: true
       ansible.builtin.copy:
@@ -105,12 +107,12 @@
         mode: "0755"
         force: true
 
-    - name: Run oc login
+    - name: Test oc login
       tags: test
       ansible.builtin.command: >
         oc login -u developer -p developer https://api.crc.testing:6443 --insecure-skip-tls-verify
 
-    - name: Run, check, delete alpine pod in developer project as test
+    - name: Test project and pod creation as developer
       tags: test
       ansible.builtin.shell: |
         set -o pipefail
@@ -119,8 +121,8 @@
         oc wait --for=condition=Ready --timeout 15m pod/alpine
         oc delete pod/alpine --force
 
-    - name: Print crc webconsole info
+    - name: Print webconsole info
       ansible.builtin.debug:
         msg: >-
-          You can now login at https://console-openshift-console.apps-crc.testing with
-          developer/developer or kubeadmin/kubeadmin credentials.
+          You can now login at https://console-openshift-console.apps-crc.testing
+          with 'developer:developer' or 'kubeadmin:kubeadmin' credentials.
