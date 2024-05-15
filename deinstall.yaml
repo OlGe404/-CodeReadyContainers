@@ -1,5 +1,5 @@
 ---
-- name: Deinstall CRC
+- name: Deinstall crc
   hosts: localhost
   connection: local
   vars_files: vars.yaml
@@ -8,27 +8,22 @@
       tags: skip_ansible_lint
       ansible.builtin.shell: oc logout | true
 
-    - name: Remove CRC instance
+    - name: Remove crc instance
       loop:
         - crc stop
-        - crc delete --clear-cache
+        - crc delete --clear-cache --force
         - crc cleanup
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
-    - name: Remove CRC files
+    - name: Remove files
       become: true
       loop:
         - /tmp/crc-linux-{{ crc_version }}-amd64/
         - /usr/local/bin/crc
+        - /usr/local/bin/oc
       ansible.builtin.file:
         state: absent
         path: "{{ item }}"
-
-    - name: Remove oc
-      become: true
-      ansible.builtin.file:
-        state: absent
-        path: /usr/local/bin/oc
 
     - name: Remove user from 'libvirt' group
       become: true
