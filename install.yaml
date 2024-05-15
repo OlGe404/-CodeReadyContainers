@@ -37,6 +37,15 @@
           - libvirt-daemon-system
           - network-manager
 
+    - name: Add user to 'libvirt' group
+      tags: prerequisites
+      become: true
+      ansible.builtin.user:
+        name: "{{ ansible_env.USER }}"
+        append: true
+        groups:
+          - libvirt
+
     - name: Download crc {{ crc_version }}
       tags: download
       become: true
@@ -64,15 +73,6 @@
         owner: "{{ ansible_env.USER }}"
         group: root
 
-    - name: Add user to 'libvirt' group
-      tags: download
-      become: true
-      ansible.builtin.user:
-        name: "{{ ansible_env.USER }}"
-        append: true
-        groups:
-          - libvirt
-
     - name: Enable cluster monitoring
       when: crc_cluster_monitoring
       tags: setup
@@ -97,7 +97,7 @@
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
     - name: Make oc executable
-      tags: setup
+      tags: test
       become: true
       ansible.builtin.copy:
         src: "{{ ansible_env.HOME }}/.crc/bin/oc/oc"
