@@ -1,3 +1,4 @@
 ---
 crc_version: 2.36.0
+crc_pull_secret_file: "{{ playbook_dir }}/pull-secret.json"
 crc_cluster_monitoring: false
