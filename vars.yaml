@@ -1,4 +1,6 @@
 ---
 crc_version: 2.36.0
 crc_pull_secret_file: "{{ playbook_dir }}/pull-secret.json"
+crc_cluster_cpus: 8
+crc_cluster_memory: 14336
 crc_cluster_monitoring: false

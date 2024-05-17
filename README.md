@@ -5,16 +5,18 @@ This repo can be used to setup a local code ready containers (CRC) installation 
 To install CRC with this repo, you need:
 * [A free redhat account](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjGw8bPx9L3AhUNCewKHT11D7EQFnoECAYQAQ&url=https%3A%2F%2Fwww.redhat.com%2Fwapps%2Fugc%2Fregister.html&usg=AOvVaw0XN5agOwobjJWWJmiitUP7)
 * [Download the mandatory pullsecrets file](https://console.redhat.com/openshift/install/pull-secret) and save it as "pull-secret.json"
-* 6 cpu cores
-* 14GB of memory
+* 4 cpu cores (default 8)
+* 10GB of memory (default 14)
 * 35GB of free storage space
 * One of the following operating systems:
     - Ubuntu 18.04 LTS or later
     - Debian 10 or later
 
-The cluster monitoring is disabled by default, because it increases the cpu and memory consumption by ~50%.
+The cluster monitoring is disabled by default, because it increases cpu and memory consumption by ~50%.
 To enable it, set <code>crc_cluster_monitoring: true</code> in [vars.yaml](vars.yaml) or provide it when calling the playbook with
 <code>-e crc_cluster_monitoring=true</code>.
+
+CPU/memory settings can be overwritten by providing <code>-e crc_cluster_cpus=6</code> and <code>-e crc_cluster_memory=10900</code>.
 
 ## Install
 When you've created a redhat account and downloaded the pullsecret file, run:

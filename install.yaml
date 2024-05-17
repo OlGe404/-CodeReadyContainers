@@ -91,8 +91,8 @@
         - crc setup
         - crc config set kubeadmin-password kubeadmin
         - crc config set pull-secret-file {{ crc_pull_secret_file }}
-        - crc config set cpus 6
-        - crc config set memory 14336
+        - crc config set cpus {{ crc_cluster_cpus }}
+        - crc config set memory {{ crc_cluster_memory }}
         - crc start
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
