@@ -129,3 +129,4 @@
         msg: >-
           You can now login at https://console-openshift-console.apps-crc.testing
           with 'developer:developer' or 'kubeadmin:kubeadmin' credentials.
+          Any kind of "insecure connection" errors can be ignored safely.
