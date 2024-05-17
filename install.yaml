@@ -23,7 +23,7 @@
         that: crc_version is regex("^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$")
         success_msg: crc_version is semver compatible
         fail_msg: >-
-          The specified crc_version ('{{ crc_version }}') is not semver compatible (https://semver.org/).
+          The specified crc_version ('{{ crc_version }}') is not semver compatible.
           See https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/crc/
           for a list of valid and available versions (exluding bundles/ and latest/).
 
@@ -110,8 +110,9 @@
 
     - name: Test oc login as developer
       tags: test
-      ansible.builtin.command: >
-        oc login -u developer -p developer https://api.crc.testing:6443 --insecure-skip-tls-verify
+      ansible.builtin.command: >-
+        oc login -u developer -p developer
+        https://api.crc.testing:6443 --insecure-skip-tls-verify
 
     - name: Test project and pod creation as developer
       tags: test
@@ -129,4 +130,3 @@
         msg: >-
           You can now login at https://console-openshift-console.apps-crc.testing
           with 'developer:developer' or 'kubeadmin:kubeadmin' credentials.
-          Any kind of "insecure connection" errors can be safeignoredly ignored.
