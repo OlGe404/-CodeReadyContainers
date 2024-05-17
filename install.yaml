@@ -78,9 +78,7 @@
     - name: Enable cluster monitoring
       when: crc_cluster_monitoring
       tags: setup
-      loop:
-        - crc config set enable-cluster-monitoring true
-      ansible.builtin.command: sg libvirt -c "{{ item }}"
+      ansible.builtin.command: sg libvirt -c "crc config set enable-cluster-monitoring true"
 
     - name: Print timestamp
       tags: setup
