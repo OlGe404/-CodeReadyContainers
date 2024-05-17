@@ -11,17 +11,17 @@
 
     - name: Test existence of pull-secret file
       ansible.builtin.assert:
-        that:
-          - pull_secret_file.stat.exists
+        that: pull_secret_file.stat.exists
+        success_msg: Found configured pull-secret file
         fail_msg: >-
           The mandatory pull-secret file doesn't exist at '{{ crc_pull_secret_file }}'.
           Read the "Requirements" section in README.md on how to create it.
 
     - name: Test for semver compatibility
       ansible.builtin.assert:
-        that:
-          # Regex comes from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-          - crc_version is regex("^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$")
+        # Regex comes from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+        that: crc_version is regex("^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$")
+        success_msg: crc_version is semver compatible
         fail_msg: >-
           The specified crc_version ('{{ crc_version }}') is not semver compatible (https://semver.org/).
           See https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/crc/
