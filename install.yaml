@@ -4,26 +4,28 @@
   connection: local
   vars_files: vars.yaml
   pre_tasks:
-    - name: Check for pull-secret file
+    - name: Get pull-secret file infos
       ansible.builtin.stat:
         path: "{{ crc_pull_secret_file }}"
       register: pull_secret_file
 
-    - name: Fail if it doesn't exist
-      when: not pull_secret_file.stat.exists
-      ansible.builtin.fail:
-        msg: >-
+    - name: Test existence of pull-secret file
+      ansible.builtin.assert:
+        that:
+          - pull_secret_file.stat.exists
+        fail_msg: >-
           The mandatory pull-secret file doesn't exist at '{{ crc_pull_secret_file }}'.
           Read the "Requirements" section in README.md on how to create it.
 
-    - name: Fail if crc_version is invalid
-      when: crc_version is not regex("([\d.]+)")
-      ansible.builtin.fail:
-        msg: >-
-          The specified crc_version ('{{ crc_version }}') is invalid.
-          You can only provide semver compatible versions like "2.26.0", "2.34.1" etc.
-          Checkout the "Update" section in README.md on which versions are supported
-          and where you can find them.
+    - name: Test for semver compatibility
+      ansible.builtin.assert:
+        that:
+          # Regex comes from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+          - crc_version is regex("^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$")
+        fail_msg: >-
+          The specified crc_version ('{{ crc_version }}') is not semver compatible (https://semver.org/).
+          See https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/crc/
+          for a list of valid and available versions (exluding bundles/ and latest/).
 
   tasks:
     - name: Install required packages
