@@ -79,8 +79,6 @@
       when: crc_cluster_monitoring
       tags: setup
       loop:
-        - crc config set cpus 6
-        - crc config set memory 14336
         - crc config set enable-cluster-monitoring true
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
@@ -95,6 +93,8 @@
         - crc setup
         - crc config set kubeadmin-password kubeadmin
         - crc config set pull-secret-file {{ crc_pull_secret_file }}
+        - crc config set cpus 6
+        - crc config set memory 14336
         - crc start
       ansible.builtin.command: sg libvirt -c "{{ item }}"
 
@@ -131,4 +131,4 @@
         msg: >-
           You can now login at https://console-openshift-console.apps-crc.testing
           with 'developer:developer' or 'kubeadmin:kubeadmin' credentials.
-          Any kind of "insecure connection" errors can be ignored safely.
+          Any kind of "insecure connection" errors can be safeignoredly ignored.

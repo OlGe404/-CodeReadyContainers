@@ -5,8 +5,8 @@ This repo can be used to setup a local code ready containers (CRC) installation 
 To install CRC with this repo, you need:
 * [A free redhat account](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjGw8bPx9L3AhUNCewKHT11D7EQFnoECAYQAQ&url=https%3A%2F%2Fwww.redhat.com%2Fwapps%2Fugc%2Fregister.html&usg=AOvVaw0XN5agOwobjJWWJmiitUP7)
 * [Download the mandatory pullsecrets file](https://console.redhat.com/openshift/install/pull-secret) and save it as "pull-secret.json"
-* 4 cpu cores (6 when cluster monitoring is enabled)
-* 9GB of memory (15GB when cluster monitoring is enabled)
+* 6 cpu cores
+* 14GB of memory
 * 35GB of free storage space
 * One of the following operating systems:
     - Ubuntu 18.04 LTS or later
