@@ -1,10 +1,10 @@
 # CodeReadyContainers
-This repo can be used to setup a local code ready containers (CRC) installation (openshift 4 equivalent) on Ubuntu/Debian (only tested on Ubuntu 22.04).
+This repo can be used to setup a local code ready containers (CRC) installation (openshift 4 equivalent) on Ubuntu/Debian.
 
 ## Requirements
 To install CRC with this repo, you need:
 * [A free redhat account](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjGw8bPx9L3AhUNCewKHT11D7EQFnoECAYQAQ&url=https%3A%2F%2Fwww.redhat.com%2Fwapps%2Fugc%2Fregister.html&usg=AOvVaw0XN5agOwobjJWWJmiitUP7)
-* [Download the mandatory pullsecrets file](https://console.redhat.com/openshift/install/pull-secret) and save it as "pull-secret.json"
+* [Download the mandatory pullsecrets file](https://console.redhat.com/openshift/install/pull-secret) and save it as `pull-secret.json`
 * 4 cpu cores (default 8)
 * 9GB of memory (default 14GB)
 * 35GB of free storage space
@@ -12,12 +12,13 @@ To install CRC with this repo, you need:
     - Ubuntu 18.04 LTS or later
     - Debian 10 or later
 
-The cluster monitoring is disabled by default, because it increases cpu and memory consumption by ~50% (when the system is under load).
-To enable it, provide the <code>-e crc_cluster_monitoring=true</code> arg when calling the playbook. CPU/memory settings can be overwritten too by providing <code>-e crc_cluster_cpus=<cpu_count></code> or <code>-e crc_cluster_memory=<memory_in_gib></code>.
+The cluster monitoring is disabled by default, because it increases resource consumption by ~50%. To enable it, provide the <code>-e crc_cluster_monitoring=true</code> arg when calling the playbook.
+The CPU/memory settings can be overwritten by providing <code>-e crc_cluster_cpus=<cpu_count></code> or <code>-e crc_cluster_memory=<memory_in_gib></code> when calling the playbook.
 
 ## Install
 When you've created a redhat account and downloaded the pullsecret file, run:
-  * <code>python3 -m pip install --user -r requirements.txt</code>
+  * <code>python3 -m venv .venv && source .venv/bin/activate</code>
+  * <code>pip install -r requirements.txt</code>
   * <code>ansible-playbook install.yaml</code>
 
 **NOTE:** If passwordless sudo is disabled, force ansible to ask for your sudo password by appending <code>-K</code> or <code>--ask-become-pass</code> to
