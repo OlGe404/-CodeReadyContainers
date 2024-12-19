@@ -18,6 +18,7 @@ The CPU/memory settings can be overwritten by providing <code>-e crc_cluster_cpu
 ## Install
 When you've created a redhat account and downloaded the pullsecret file, run:
   * <code>python3 -m venv .venv && source .venv/bin/activate</code>
+  * <code>pip install --upgrade pip setuptools wheel</code>
   * <code>pip install -r requirements.txt</code>
   * <code>ansible-playbook install.yaml</code>
 
